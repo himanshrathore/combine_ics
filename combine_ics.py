@@ -1,6 +1,6 @@
 #Code to combine two HDF5 initial conditions
 #Author: Himansh Rathore, February 2023
-#Last updated: Apr 21, 2023 by Himansh Rathore
+#Last updated: Jul 9, 2023 by Himansh Rathore
 
 import numpy as np
 import h5py
@@ -69,6 +69,15 @@ v_y2 = -param.v_y2
 v_z2 = -param.v_z2
 print('Reading transformation parameters...')
 
+#Reading flags
+rotation_flag1 = param.rotation_flag1
+rotation_flag2 = param.rotation_flag2
+pos_translation_flag1 = param.pos_translation_flag1
+pos_translation_flag2 = param.pos_translation_flag2
+vel_translation_flag1 = param.vel_translation_flag1
+vel_translation_flag2 = param.vel_translation_flag2
+print('Reading transformation flags...')
+
 N_part_types = 6 #total number of gadget particle types
 print('Assuming 6 particle types')
 
@@ -120,15 +129,19 @@ print("Creating particle IDs of PartType1...")
 
 ic1_part1_coord = np.array(f1['PartType1']['Coordinates'], dtype = np.float64) #halo coordinates of ic1
 #performing rotation
-ic1_part1_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part1_coord.T)).T
+if(rotation_flag1 == True):
+    ic1_part1_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part1_coord.T)).T
 #performing translation
-ic1_part1_coord = translate_gal(ic1_part1_coord.T, np.array([x1, y1, z1])).T
+if(pos_translation_flag1 == True):
+    ic1_part1_coord = translate_gal(ic1_part1_coord.T, np.array([x1, y1, z1])).T
 
 ic2_part1_coord = np.array(f2['PartType1']['Coordinates'], dtype = np.float64) #halo coordinates of ic2
 #performing rotation
-ic2_part1_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part1_coord.T)).T
+if(rotation_flag2 == True):
+    ic2_part1_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part1_coord.T)).T
 #performing translation
-ic2_part1_coord = translate_gal(ic2_part1_coord.T, np.array([x2, y2, z2])).T
+if(pos_translation_flag2 == True):
+    ic2_part1_coord = translate_gal(ic2_part1_coord.T, np.array([x2, y2, z2])).T
 
 part1_coord = np.vstack((ic1_part1_coord, ic2_part1_coord)) #combined halo coordinates
 
@@ -140,15 +153,19 @@ print("Creating coordinates of PartType1...")
 
 ic1_part1_vel = np.array(f1['PartType1']['Velocities'], dtype = np.float64) #halo velocities of ic1
 #performing rotation
-ic1_part1_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part1_vel.T)).T
+if(rotation_flag1 == True):
+    ic1_part1_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part1_vel.T)).T
 #performing translation
-ic1_part1_vel = translate_gal(ic1_part1_vel.T, np.array([v_x1, v_y1, v_z1])).T
+if(vel_translation_flag1 == True):
+    ic1_part1_vel = translate_gal(ic1_part1_vel.T, np.array([v_x1, v_y1, v_z1])).T
 
 ic2_part1_vel = np.array(f2['PartType1']['Velocities'], dtype = np.float64) #halo velocities of ic2
 #performing rotation
-ic2_part1_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part1_vel.T)).T
+if(rotation_flag2 == True):
+    ic2_part1_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part1_vel.T)).T
 #performing translation
-ic2_part1_vel = translate_gal(ic2_part1_vel.T, np.array([v_x2, v_y2, v_z2])).T
+if(vel_translation_flag2 == True):
+    ic2_part1_vel = translate_gal(ic2_part1_vel.T, np.array([v_x2, v_y2, v_z2])).T
 
 part1_vel = np.vstack((ic1_part1_vel, ic2_part1_vel)) #combined halo velocities
 
@@ -197,15 +214,19 @@ print("Creating particle IDs of PartType2...")
 
 ic1_part2_coord = np.array(f1['PartType2']['Coordinates'], dtype = np.float64) #disk coordinates of ic1
 #performing rotation
-ic1_part2_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_coord.T)).T
+if(rotation_flag1 == True):
+    ic1_part2_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_coord.T)).T
 #performing translation
-ic1_part2_coord = translate_gal(ic1_part2_coord.T, np.array([x1, y1, z1])).T
+if(pos_translation_flag1 == True):
+    ic1_part2_coord = translate_gal(ic1_part2_coord.T, np.array([x1, y1, z1])).T
 
 ic2_part2_coord = np.array(f2['PartType2']['Coordinates'], dtype = np.float64) #disk coordinates of ic2
 #performing rotation
-ic2_part2_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_coord.T)).T
+if(rotation_flag2 == True):
+    ic2_part2_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_coord.T)).T
 #performing translation
-ic2_part2_coord = translate_gal(ic2_part2_coord.T, np.array([x2, y2, z2])).T
+if(pos_translation_flag2 == True):
+    ic2_part2_coord = translate_gal(ic2_part2_coord.T, np.array([x2, y2, z2])).T
 
 part2_coord = np.vstack((ic1_part2_coord, ic2_part2_coord)) #combined disk coordinates
 
@@ -217,15 +238,19 @@ print("Creating coordinates of PartType2...")
 
 ic1_part2_vel = np.array(f1['PartType2']['Velocities'], dtype = np.float64) #disk velocities of ic1
 #performing rotation
-ic1_part2_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_vel.T)).T
+if(rotation_flag1 == True):
+    ic1_part2_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_vel.T)).T
 #performing translation
-ic1_part2_vel = translate_gal(ic1_part2_vel.T, np.array([v_x1, v_y1, v_z1])).T
+if(vel_translation_flag1 == True):
+    ic1_part2_vel = translate_gal(ic1_part2_vel.T, np.array([v_x1, v_y1, v_z1])).T
 
 ic2_part2_vel = np.array(f2['PartType2']['Velocities'], dtype = np.float64) #disk velocities of ic2
 #performing rotation
-ic2_part2_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_vel.T)).T
+if(rotation_flag2 == True):
+    ic2_part2_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_vel.T)).T
 #performing translation
-ic2_part2_vel = translate_gal(ic2_part2_vel.T, np.array([v_x2, v_y2, v_z2])).T
+if(vel_translation_flag2 == True):
+    ic2_part2_vel = translate_gal(ic2_part2_vel.T, np.array([v_x2, v_y2, v_z2])).T
 
 part2_vel = np.vstack((ic1_part2_vel, ic2_part2_vel)) #combined halo velocities
 
@@ -272,15 +297,19 @@ print("Creating particle IDs of PartType5...")
 
 ic1_part5_coord = np.array(f1['PartType5']['Coordinates'], dtype = np.float64) #BH coordinates of ic1
 #performing rotation
-ic1_part5_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_coord.T)).T
+if(rotation_flag1 == True):
+    ic1_part5_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_coord.T)).T
 #performing translation
-ic1_part5_coord = translate_gal(ic1_part5_coord.T, np.array([x1, y1, z1])).T
+if(pos_translation_flag1 == True):
+    ic1_part5_coord = translate_gal(ic1_part5_coord.T, np.array([x1, y1, z1])).T
 
 ic2_part5_coord = np.array(f2['PartType5']['Coordinates'], dtype = np.float64) #BH coordinates of ic2
 #performing rotation
-ic2_part5_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_coord.T)).T
+if(rotation_flag2 == True):
+    ic2_part5_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_coord.T)).T
 #performing translation
-ic2_part5_coord = translate_gal(ic2_part5_coord.T, np.array([x2, y2, z2])).T
+if(pos_translation_flag2 == True):
+    ic2_part5_coord = translate_gal(ic2_part5_coord.T, np.array([x2, y2, z2])).T
 
 part5_coord = np.vstack((ic1_part5_coord, ic2_part5_coord)) #combined disk coordinates
 
@@ -292,15 +321,19 @@ print("Creating coordinates of PartType5...")
 
 ic1_part5_vel = np.array(f1['PartType5']['Velocities'], dtype = np.float64) #BH velocities of ic1
 #performing rotation
-ic1_part5_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_vel.T)).T
+if(rotation_flag1 == True):
+    ic1_part5_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_vel.T)).T
 #performing translation
-ic1_part5_vel = translate_gal(ic1_part5_vel.T, np.array([v_x1, v_y1, v_z1])).T
+if(vel_translation_flag1 == True):
+    ic1_part5_vel = translate_gal(ic1_part5_vel.T, np.array([v_x1, v_y1, v_z1])).T
 
 ic2_part5_vel = np.array(f2['PartType5']['Velocities'], dtype = np.float64) #BH velocities of ic2
 #performing rotation
-ic2_part5_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_vel.T)).T
+if(rotation_flag2 == True):
+    ic2_part5_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_vel.T)).T
 #performing translation
-ic2_part5_vel = translate_gal(ic2_part5_vel.T, np.array([v_x2, v_y2, v_z2])).T
+if(vel_translation_flag2 == True):
+    ic2_part5_vel = translate_gal(ic2_part5_vel.T, np.array([v_x2, v_y2, v_z2])).T
 
 part5_vel = np.vstack((ic1_part5_vel, ic2_part5_vel)) #combined halo velocities
 
