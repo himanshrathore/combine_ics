@@ -1,4 +1,4 @@
-#Code to combine two HDF5 initial conditions
+#Code to combine two N-body Gadget-4 based HDF5 initial conditions
 #Author: Himansh Rathore, February 2023
 #Last updated: Jul 9, 2023 by Himansh Rathore
 
@@ -15,12 +15,12 @@ def translate_gal(state, frame): #active translation
 
     return np.subtract(state.T, frame.reshape(1,3)).T
 
-def Ry(beta): #active rotation about y-axis
+def Ry(beta): #active rotation matrix about y-axis
     return np.array([[np.cos(beta), 0, np.sin(beta)],
                     [0, 1, 0],
                     [-np.sin(beta), 0, np.cos(beta)]])
 
-def Rz(gamma): #active rotation about z-axis
+def Rz(gamma): #active rotation matrix about z-axis
     return np.array([[np.cos(gamma), -np.sin(gamma), 0],
                     [np.sin(gamma), np.cos(gamma), 0],
                     [0, 0, 1]])

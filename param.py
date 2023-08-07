@@ -2,9 +2,9 @@
 #This file should be in the same directory as the executable combine_ics.py
 
 #specifying files
-ic1 = "./ics_lmc_hern_dm_halo_exp_disk.hdf5" #first ic file 
-ic2 = "./ics_smc_hern_dm_halo_exp_disk.hdf5" #second ic file
-ic  = "./ics_lmc_smc_hern_dm_halo_exp_disk.hdf5" #combined file
+ic1 = "./ics_lmc_hern_dm_halo_exp_disk.hdf5" #full path of first ic file 
+ic2 = "./ics_smc_hern_dm_halo_exp_disk.hdf5" #full path of second ic file
+ic  = "./ics_lmc_smc_hern_dm_halo_exp_disk.hdf5" #full path to combined file
 
 #specifying transformation parameters
 
