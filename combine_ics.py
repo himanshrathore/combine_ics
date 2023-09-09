@@ -1,6 +1,6 @@
-#Code to combine two N-body Gadget-4 based HDF5 initial conditions
+#Code to combine two Gadget-4 based HDF5 initial conditions
 #Author: Himansh Rathore, February 2023
-#Last updated: Jul 9, 2023 by Himansh Rathore
+#Last updated: Sep 8, 2023 by Himansh Rathore
 
 import numpy as np
 import h5py
@@ -100,10 +100,12 @@ head.attrs['Time'] = 0.0 #since this is the ic
 print('Creating header of combined ic')
 
 #keeping number count of different particle types
+ic1_part0_count = int(head1.attrs['NumPart_Total'][0])
 ic1_part1_count = int(head1.attrs['NumPart_Total'][1])
 ic1_part2_count = int(head1.attrs['NumPart_Total'][2])
 ic1_part5_count = int(head1.attrs['NumPart_Total'][5])
 
+ic2_part0_count = int(head2.attrs['NumPart_Total'][0])
 ic2_part1_count = int(head2.attrs['NumPart_Total'][1])
 ic2_part2_count = int(head2.attrs['NumPart_Total'][2])
 ic2_part5_count = int(head2.attrs['NumPart_Total'][5])
@@ -111,7 +113,88 @@ ic2_part5_count = int(head2.attrs['NumPart_Total'][5])
 N_ic1 = int(np.sum(head1.attrs['NumPart_Total'])) #total no. of particles in ic1
 N_ic2 = int(np.sum(head2.attrs['NumPart_Total'])) #total no. of particles in ic2
 
-#Assuming no gas
+#creating PartType0 (gas)
+
+#creating ParticleIDs
+ic1_part0_pids = np.array(f1['PartType0']['ParticleIDs'], dtype = int)
+ic2_part0_pids = np.array(f2['PartType0']['ParticleIDs'], dtype = int)
+
+part0_pids = np.append(ic1_part0_pids, ic2_part0_pids + N_ic1).astype(int) 
+
+dset = f.create_dataset('/PartType0/ParticleIDs', shape = part0_pids.shape, dtype = part0_pids.dtype, data = part0_pids)
+
+print("Creating particle IDs of PartType0...")
+
+#creating coordinates
+
+ic1_part0_coord = np.array(f1['PartType0']['Coordinates'], dtype = np.float64) #gas coordinates of ic1
+#performing rotation
+if(rotation_flag1 == True):
+    ic1_part0_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part0_coord.T)).T
+#performing translation
+if(pos_translation_flag1 == True):
+    ic1_part0_coord = translate_gal(ic1_part0_coord.T, np.array([x1, y1, z1])).T
+
+ic2_part0_coord = np.array(f2['PartType0']['Coordinates'], dtype = np.float64) #gas coordinates of ic2
+#performing rotation
+if(rotation_flag2 == True):
+    ic2_part0_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part0_coord.T)).T
+#performing translation
+if(pos_translation_flag2 == True):
+    ic2_part0_coord = translate_gal(ic2_part0_coord.T, np.array([x2, y2, z2])).T
+
+part0_coord = np.vstack((ic1_part0_coord, ic2_part0_coord)) #combined gas coordinates
+
+dset = f.create_dataset('/PartType0/Coordinates', shape = part0_coord.shape, dtype = part0_coord.dtype, data = part0_coord)
+
+print("Creating coordinates of PartType0...")
+
+#creating velocities
+
+ic1_part0_vel = np.array(f1['PartType0']['Velocities'], dtype = np.float64) #gas velocities of ic1
+#performing rotation
+if(rotation_flag1 == True):
+    ic1_part0_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part0_vel.T)).T
+#performing translation
+if(vel_translation_flag1 == True):
+    ic1_part0_vel = translate_gal(ic1_part0_vel.T, np.array([v_x1, v_y1, v_z1])).T
+
+ic2_part0_vel = np.array(f2['PartType0']['Velocities'], dtype = np.float64) #gas velocities of ic2
+#performing rotation
+if(rotation_flag2 == True):
+    ic2_part0_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part0_vel.T)).T
+#performing translation
+if(vel_translation_flag2 == True):
+    ic2_part0_vel = translate_gal(ic2_part0_vel.T, np.array([v_x2, v_y2, v_z2])).T
+
+part0_vel = np.vstack((ic1_part0_vel, ic2_part0_vel)) #combined gas velocities
+
+dset = f.create_dataset('/PartType0/Velocities', shape = part0_vel.shape, dtype = part0_vel.dtype, data = part0_vel)
+
+print("Creating velocities of PartType0...")
+
+#creating masses
+
+#try getting mass from the mass list of the particle type
+try:
+    ic1_part0_mass = np.array(f1['PartType0']['Masses'], dtype = np.float64, ndmin=1)
+    #if this does not exist, particles of this type have identical mass
+    #the mass is listed in the header of the table
+except KeyError:
+    ic1_part0_mass = np.full(ic1_part0_count, head1.attrs['MassTable'][0]).astype(float)
+    
+try:
+    ic2_part0_mass = np.array(f2['PartType0']['Masses'], dtype = np.float64, ndmin=1)
+    #if this does not exist, particles of this type have identical mass
+    #the mass is listed in the header of the table
+except KeyError:
+    ic2_part0_mass = np.full(ic2_part0_count, head2.attrs['MassTable'][0]).astype(float)
+    
+part0_masses = np.append(ic1_part0_mass, ic2_part0_mass).astype(float)
+
+dset = f.create_dataset('/PartType0/Masses', shape = part0_masses.shape, dtype = part0_masses.dtype, data = part0_masses)
+
+print("Creating masses of PartType0...")
 
 #creating PartType1 (DM halo)
 
