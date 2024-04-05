@@ -377,174 +377,223 @@ if(('PartType1' in part_types1) or ('PartType1' in part_types2)): #do nothing if
 
     print("Creating masses of PartType1...")
     
-####Himansh: bookmarked Apr 5, 2024, 13:50 Tucson time
 #creating PartType2 (stellar disk)
 
-#creating ParticleIDs
+if(('PartType2' in part_types1) or ('PartType2' in part_types2)): #do nothing if disk is not present in either IC's
 
-#creating ParticleIDs
-ic1_part2_pids = np.array(f1['PartType2']['ParticleIDs'], dtype = int)
-ic2_part2_pids = np.array(f2['PartType2']['ParticleIDs'], dtype = int)
+    #creating ParticleIDs
+    if('PartType2' in part_types1):
+        ic1_part2_pids = np.array(f1['PartType2']['ParticleIDs'], dtype = int)
+    else:
+        ic1_part2_pids = np.array([])
+    if('PartType2' in part_types2):
+        ic2_part2_pids = np.array(f2['PartType2']['ParticleIDs'], dtype = int)
+    else:
+        ic2_part2_pids = np.array([])
 
-part2_pids = np.append(ic1_part2_pids, ic2_part2_pids + N_ic1).astype(int) 
+    part2_pids = np.append(ic1_part2_pids, ic2_part2_pids + N_ic1).astype(int) 
 
-dset = f.create_dataset('/PartType2/ParticleIDs', shape = part2_pids.shape, dtype = part2_pids.dtype, data = part2_pids)
+    dset = f.create_dataset('/PartType2/ParticleIDs', shape = part2_pids.shape, dtype = part2_pids.dtype, data = part2_pids)
 
-print("Creating particle IDs of PartType2...")
+    print("Creating particle IDs of PartType2...")
 
-#creating coordinates
+    #creating coordinates
 
-ic1_part2_coord = np.array(f1['PartType2']['Coordinates'], dtype = np.float64) #disk coordinates of ic1
-#performing rotation
-if(rotation_flag1 == True):
-    ic1_part2_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_coord.T)).T
-#performing translation
-if(pos_translation_flag1 == True):
-    ic1_part2_coord = translate_gal(ic1_part2_coord.T, np.array([x1, y1, z1])).T
+    if('PartType2' in part_types1):
+        ic1_part2_coord = np.array(f1['PartType2']['Coordinates'], dtype = np.float64) #disk coordinates of ic1
+        #performing rotation
+        if(rotation_flag1 == True):
+            ic1_part2_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_coord.T)).T
+        #performing translation
+        if(pos_translation_flag1 == True):
+            ic1_part2_coord = translate_gal(ic1_part2_coord.T, np.array([x1, y1, z1])).T
+    else:
+        ic1_part2_coord = np.array([])
+        
+    if('PartType2' in part_types2):
+        ic2_part2_coord = np.array(f2['PartType2']['Coordinates'], dtype = np.float64) #disk coordinates of ic2
+        #performing rotation
+        if(rotation_flag2 == True):
+            ic2_part2_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_coord.T)).T
+        #performing translation
+        if(pos_translation_flag2 == True):
+            ic2_part2_coord = translate_gal(ic2_part2_coord.T, np.array([x2, y2, z2])).T
+    else:
+        ic2_part2_coord = np.array([])
 
-ic2_part2_coord = np.array(f2['PartType2']['Coordinates'], dtype = np.float64) #disk coordinates of ic2
-#performing rotation
-if(rotation_flag2 == True):
-    ic2_part2_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_coord.T)).T
-#performing translation
-if(pos_translation_flag2 == True):
-    ic2_part2_coord = translate_gal(ic2_part2_coord.T, np.array([x2, y2, z2])).T
+    part2_coord = np.vstack((ic1_part2_coord, ic2_part2_coord)) #combined disk coordinates
 
-part2_coord = np.vstack((ic1_part2_coord, ic2_part2_coord)) #combined disk coordinates
+    dset = f.create_dataset('/PartType2/Coordinates', shape = part2_coord.shape, dtype = part2_coord.dtype, data = part2_coord)
 
-dset = f.create_dataset('/PartType2/Coordinates', shape = part2_coord.shape, dtype = part2_coord.dtype, data = part2_coord)
+    print("Creating coordinates of PartType2...")
 
-print("Creating coordinates of PartType2...")
-
-#creating velocities
-
-ic1_part2_vel = np.array(f1['PartType2']['Velocities'], dtype = np.float64) #disk velocities of ic1
-#performing rotation
-if(rotation_flag1 == True):
-    ic1_part2_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_vel.T)).T
-#performing translation
-if(vel_translation_flag1 == True):
-    ic1_part2_vel = translate_gal(ic1_part2_vel.T, np.array([v_x1, v_y1, v_z1])).T
-
-ic2_part2_vel = np.array(f2['PartType2']['Velocities'], dtype = np.float64) #disk velocities of ic2
-#performing rotation
-if(rotation_flag2 == True):
-    ic2_part2_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_vel.T)).T
-#performing translation
-if(vel_translation_flag2 == True):
-    ic2_part2_vel = translate_gal(ic2_part2_vel.T, np.array([v_x2, v_y2, v_z2])).T
-
-part2_vel = np.vstack((ic1_part2_vel, ic2_part2_vel)) #combined halo velocities
-
-dset = f.create_dataset('/PartType2/Velocities', shape = part2_vel.shape, dtype = part2_vel.dtype, data = part2_vel)
-
-print("Creating velocities of PartType2...")
-
-#creating masses
-
-#try getting mass from the mass list of the particle type
-try:
-    ic1_part2_mass = np.array(f1['PartType2']['Masses'], dtype = np.float64, ndmin=1)
-    #if this does not exist, particles of this type have identical mass
-    #the mass is listed in the header of the table
-except KeyError:
-    ic1_part2_mass = np.full(ic1_part2_count, head1.attrs['MassTable'][2]).astype(float)
+    #creating velocities
     
-try:
-    ic2_part2_mass = np.array(f2['PartType2']['Masses'], dtype = np.float64, ndmin=1)
-    #if this does not exist, particles of this type have identical mass
-    #the mass is listed in the header of the table
-except KeyError:
-    ic2_part2_mass = np.full(ic2_part2_count, head2.attrs['MassTable'][2]).astype(float)
-    
-part2_masses = np.append(ic1_part2_mass, ic2_part2_mass).astype(float)
+    if('PartType2' in part_types1):
+        ic1_part2_vel = np.array(f1['PartType2']['Velocities'], dtype = np.float64) #disk velocities of ic1
+        #performing rotation
+        if(rotation_flag1 == True):
+            ic1_part2_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part2_vel.T)).T
+        #performing translation
+        if(vel_translation_flag1 == True):
+            ic1_part2_vel = translate_gal(ic1_part2_vel.T, np.array([v_x1, v_y1, v_z1])).T
+    else:
+        ic1_part2_vel = np.array([])
+        
+    if('PartType2' in part_types2):
+        ic2_part2_vel = np.array(f2['PartType2']['Velocities'], dtype = np.float64) #disk velocities of ic2
+        #performing rotation
+        if(rotation_flag2 == True):
+            ic2_part2_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part2_vel.T)).T
+        #performing translation
+        if(vel_translation_flag2 == True):
+            ic2_part2_vel = translate_gal(ic2_part2_vel.T, np.array([v_x2, v_y2, v_z2])).T
+    else:
+        ic2_part2_vel = np.array([])
 
-dset = f.create_dataset('/PartType2/Masses', shape = part2_masses.shape, dtype = part2_masses.dtype, data = part2_masses)
+    part2_vel = np.vstack((ic1_part2_vel, ic2_part2_vel)) #combined halo velocities
 
-print("Creating masses of PartType2...")
+    dset = f.create_dataset('/PartType2/Velocities', shape = part2_vel.shape, dtype = part2_vel.dtype, data = part2_vel)
+
+    print("Creating velocities of PartType2...")
+
+    #creating masses
+
+    #try getting mass from the mass list of the particle type
+    if('PartType2' in part_types1):
+        try:
+            ic1_part2_mass = np.array(f1['PartType2']['Masses'], dtype = np.float64, ndmin=1)
+            #if this does not exist, particles of this type have identical mass
+            #the mass is listed in the header of the table
+        except KeyError:
+            ic1_part2_mass = np.full(ic1_part2_count, head1.attrs['MassTable'][2]).astype(float)
+    else:
+        ic1_part2_mass = np.array([])
+        
+    if('PartType2' in part_types2):
+        try:
+            ic2_part2_mass = np.array(f2['PartType2']['Masses'], dtype = np.float64, ndmin=1)
+            #if this does not exist, particles of this type have identical mass
+            #the mass is listed in the header of the table
+        except KeyError:
+            ic2_part2_mass = np.full(ic2_part2_count, head2.attrs['MassTable'][2]).astype(float)
+    else:
+        ic2_part2_mass = np.array([])
+
+    part2_masses = np.append(ic1_part2_mass, ic2_part2_mass).astype(float)
+
+    dset = f.create_dataset('/PartType2/Masses', shape = part2_masses.shape, dtype = part2_masses.dtype, data = part2_masses)
+
+    print("Creating masses of PartType2...")
 
 #creating PartType5 (central BHs)
 
-#creating ParticleIDs
-ic1_part5_pids = np.array(f1['PartType5']['ParticleIDs'], dtype = int)
-ic2_part5_pids = np.array(f2['PartType5']['ParticleIDs'], dtype = int)
+if(('PartType5' in part_types1) or ('PartType5' in part_types2)): #do nothing if bh is not present in either IC's
 
-part5_pids = np.append(ic1_part5_pids, ic2_part5_pids + N_ic1).astype(int) 
+    #creating ParticleIDs
+    if('PartType5' in part_types1):
+        ic1_part5_pids = np.array(f1['PartType5']['ParticleIDs'], dtype = int)
+    else:
+        ic1_part5_pids = np.array([])
+    if('PartType5' in part_types2):
+        ic2_part5_pids = np.array(f2['PartType5']['ParticleIDs'], dtype = int)
+    else:
+        ic2_part5_pids = np.array([])
 
-dset = f.create_dataset('/PartType5/ParticleIDs', shape = part5_pids.shape, dtype = part5_pids.dtype, data = part5_pids)
+    part5_pids = np.append(ic1_part5_pids, ic2_part5_pids + N_ic1).astype(int) 
 
-print("Creating particle IDs of PartType5...")
+    dset = f.create_dataset('/PartType5/ParticleIDs', shape = part5_pids.shape, dtype = part5_pids.dtype, data = part5_pids)
 
-#creating coordinates
+    print("Creating particle IDs of PartType5...")
 
-ic1_part5_coord = np.array(f1['PartType5']['Coordinates'], dtype = np.float64) #BH coordinates of ic1
-#performing rotation
-if(rotation_flag1 == True):
-    ic1_part5_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_coord.T)).T
-#performing translation
-if(pos_translation_flag1 == True):
-    ic1_part5_coord = translate_gal(ic1_part5_coord.T, np.array([x1, y1, z1])).T
-
-ic2_part5_coord = np.array(f2['PartType5']['Coordinates'], dtype = np.float64) #BH coordinates of ic2
-#performing rotation
-if(rotation_flag2 == True):
-    ic2_part5_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_coord.T)).T
-#performing translation
-if(pos_translation_flag2 == True):
-    ic2_part5_coord = translate_gal(ic2_part5_coord.T, np.array([x2, y2, z2])).T
-
-part5_coord = np.vstack((ic1_part5_coord, ic2_part5_coord)) #combined disk coordinates
-
-dset = f.create_dataset('/PartType5/Coordinates', shape = part5_coord.shape, dtype = part5_coord.dtype, data = part5_coord)
-
-print("Creating coordinates of PartType5...")
-
-#creating velocities
-
-ic1_part5_vel = np.array(f1['PartType5']['Velocities'], dtype = np.float64) #BH velocities of ic1
-#performing rotation
-if(rotation_flag1 == True):
-    ic1_part5_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_vel.T)).T
-#performing translation
-if(vel_translation_flag1 == True):
-    ic1_part5_vel = translate_gal(ic1_part5_vel.T, np.array([v_x1, v_y1, v_z1])).T
-
-ic2_part5_vel = np.array(f2['PartType5']['Velocities'], dtype = np.float64) #BH velocities of ic2
-#performing rotation
-if(rotation_flag2 == True):
-    ic2_part5_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_vel.T)).T
-#performing translation
-if(vel_translation_flag2 == True):
-    ic2_part5_vel = translate_gal(ic2_part5_vel.T, np.array([v_x2, v_y2, v_z2])).T
-
-part5_vel = np.vstack((ic1_part5_vel, ic2_part5_vel)) #combined halo velocities
-
-dset = f.create_dataset('/PartType5/Velocities', shape = part5_vel.shape, dtype = part5_vel.dtype, data = part5_vel)
-
-print("Creating velocities of PartType5...")
-
-#creating masses
-
-#try getting mass from the mass list of the particle type
-try:
-    ic1_part5_mass = np.array(f1['PartType5']['Masses'], dtype = np.float64, ndmin=1)
-    #if this does not exist, particles of this type have identical mass
-    #the mass is listed in the header of the table
-except KeyError:
-    ic1_part5_mass = np.full(ic1_part5_count, head1.attrs['MassTable'][5]).astype(float)
+    #creating coordinates
     
-try:
-    ic2_part5_mass = np.array(f2['PartType5']['Masses'], dtype = np.float64, ndmin=1)
-    #if this does not exist, particles of this type have identical mass
-    #the mass is listed in the header of the table
-except KeyError:
-    ic2_part5_mass = np.full(ic2_part5_count, head2.attrs['MassTable'][5]).astype(float)
+    if('PartType5' in part_types1):
+        ic1_part5_coord = np.array(f1['PartType5']['Coordinates'], dtype = np.float64) #BH coordinates of ic1
+        #performing rotation
+        if(rotation_flag1 == True):
+            ic1_part5_coord = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_coord.T)).T
+        #performing translation
+        if(pos_translation_flag1 == True):
+            ic1_part5_coord = translate_gal(ic1_part5_coord.T, np.array([x1, y1, z1])).T
+    else:
+        ic1_part5_coord = np.array([])
+        
+    if('PartType5' in part_types2):
+        ic2_part5_coord = np.array(f2['PartType5']['Coordinates'], dtype = np.float64) #BH coordinates of ic2
+        #performing rotation
+        if(rotation_flag2 == True):
+            ic2_part5_coord = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_coord.T)).T
+        #performing translation
+        if(pos_translation_flag2 == True):
+            ic2_part5_coord = translate_gal(ic2_part5_coord.T, np.array([x2, y2, z2])).T
+    else:
+        ic2_part5_coord = np.array([])
+
+    part5_coord = np.vstack((ic1_part5_coord, ic2_part5_coord)) #combined disk coordinates
+
+    dset = f.create_dataset('/PartType5/Coordinates', shape = part5_coord.shape, dtype = part5_coord.dtype, data = part5_coord)
+
+    print("Creating coordinates of PartType5...")
+
+    #creating velocities
     
-part5_masses = np.append(ic1_part5_mass, ic2_part5_mass).astype(float)
+    if('PartType5' in part_types1):
+        ic1_part5_vel = np.array(f1['PartType5']['Velocities'], dtype = np.float64) #BH velocities of ic1
+        #performing rotation
+        if(rotation_flag1 == True):
+            ic1_part5_vel = np.matmul(Rz(phi1), np.matmul(Ry(theta1), ic1_part5_vel.T)).T
+        #performing translation
+        if(vel_translation_flag1 == True):
+            ic1_part5_vel = translate_gal(ic1_part5_vel.T, np.array([v_x1, v_y1, v_z1])).T
+    else:
+        ic1_part5_vel = np.array([])
+        
+    if('PartType5' in part_types2):
+        ic2_part5_vel = np.array(f2['PartType5']['Velocities'], dtype = np.float64) #BH velocities of ic2
+        #performing rotation
+        if(rotation_flag2 == True):
+            ic2_part5_vel = np.matmul(Rz(phi2), np.matmul(Ry(theta2), ic2_part5_vel.T)).T
+        #performing translation
+        if(vel_translation_flag2 == True):
+            ic2_part5_vel = translate_gal(ic2_part5_vel.T, np.array([v_x2, v_y2, v_z2])).T
+    else:
+        ic2_part5_vel = np.array([])
 
-dset = f.create_dataset('/PartType5/Masses', shape = part5_masses.shape, dtype = part5_masses.dtype, data = part5_masses)
+    part5_vel = np.vstack((ic1_part5_vel, ic2_part5_vel)) #combined halo velocities
 
-print("Creating masses of PartType5...")
+    dset = f.create_dataset('/PartType5/Velocities', shape = part5_vel.shape, dtype = part5_vel.dtype, data = part5_vel)
+
+    print("Creating velocities of PartType5...")
+
+    #creating masses
+    
+    if('PartType5' in part_types1):
+    #try getting mass from the mass list of the particle type
+        try:
+            ic1_part5_mass = np.array(f1['PartType5']['Masses'], dtype = np.float64, ndmin=1)
+            #if this does not exist, particles of this type have identical mass
+            #the mass is listed in the header of the table
+        except KeyError:
+            ic1_part5_mass = np.full(ic1_part5_count, head1.attrs['MassTable'][5]).astype(float)
+    else:
+        ic1_part5_mass = np.array([])
+
+    if('PartType5' in part_types2):
+        try:
+            ic2_part5_mass = np.array(f2['PartType5']['Masses'], dtype = np.float64, ndmin=1)
+            #if this does not exist, particles of this type have identical mass
+            #the mass is listed in the header of the table
+        except KeyError:
+            ic2_part5_mass = np.full(ic2_part5_count, head2.attrs['MassTable'][5]).astype(float)
+    else:
+        ic2_part5_mass = np.array([])
+        
+    part5_masses = np.append(ic1_part5_mass, ic2_part5_mass).astype(float)
+
+    dset = f.create_dataset('/PartType5/Masses', shape = part5_masses.shape, dtype = part5_masses.dtype, data = part5_masses)
+
+    print("Creating masses of PartType5...")
 
 print("Done.")
 
