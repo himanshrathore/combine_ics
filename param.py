@@ -6,6 +6,17 @@ ic1 = "./ics_lmc_hern_dm_halo_exp_disk.hdf5" #full path of first ic file
 ic2 = "./ics_smc_hern_dm_halo_exp_disk.hdf5" #full path of second ic file
 ic  = "./ics_lmc_smc_hern_dm_halo_exp_disk.hdf5" #full path to combined file
 
+#particle types (mention which ones in the form of a list)
+'''
+Currently supported particle types:
+PartType0 -> gas
+PartType1 -> halo
+PartType2 -> disk
+PartType5 -> black hole
+'''
+part_types1 = ['PartType0', 'PartType1', 'PartType2', 'PartType5'] #particle types for ic1
+part_types2 = ['PartType0', 'PartType1', 'PartType2', 'PartType5'] #particle types for ic2
+
 #specifying transformation parameters
 
 #galaxy1
