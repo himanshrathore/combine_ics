@@ -1,6 +1,6 @@
 #Code to combine two Gadget-4 based HDF5 initial conditions
 #Author: Himansh Rathore, February 2023
-#Last updated: Sep 8, 2023 by Himansh Rathore
+#Last updated: Feb 13, 2025 by Himansh Rathore
 
 import numpy as np
 import h5py
@@ -597,16 +597,4 @@ if(('PartType5' in part_types1) or ('PartType5' in part_types2)): #do nothing if
 
 print("Done.")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+#end

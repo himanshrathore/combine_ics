@@ -14,3 +14,9 @@ python3 ./combine_ics
 # Parameter file:
 See the supplied "param.py" for instructions.
 
+#Supported particle types:
+Currently, the following gadget particles types are supported:
+PartType0 -> gas
+PartType1 -> dark matter
+PartType2 -> stellar disk
+PartType5 -> black hole  

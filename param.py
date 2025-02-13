@@ -67,4 +67,4 @@ v_x2 = -108.98 #in km/s. Active translation of v_x-coordinates of galaxy2 by an 
 v_y2 = -1.24 #in km/s. Active translation of v_y-coordinates of galaxy2 by an amount v_y2
 v_z2 = -0.13 #in km/s. Active translation of v_z-coordinates of galaxy2 by an amount v_z2
 
-
+#end
