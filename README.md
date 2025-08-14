@@ -19,4 +19,5 @@ Currently, the following gadget particles types are supported: <br>
 PartType0 -> gas <br>
 PartType1 -> dark matter <br>
 PartType2 -> stellar disk <br>
+PartType3 -> bulge <br>
 PartType5 -> black hole <br> 
