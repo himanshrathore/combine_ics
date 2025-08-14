@@ -139,7 +139,7 @@ if(('PartType0' in part_types1) or ('PartType0' in part_types2)): #do nothing if
     else:
         ic2_part0_pids = np.array([])
 
-    part0_pids = np.append(ic1_part0_pids, ic2_part0_pids + N_ic1).astype(int) 
+    part0_pids = np.append(ic1_part0_pids, ic2_part0_pids + N_ic1).astype(int) #if ic2_part0_pids is empty, adding N_ic1 to it will still give an empty array. So, you will be fine. But I admit this is not good programming practice. 
 
     dset = f.create_dataset('/PartType0/ParticleIDs', shape = part0_pids.shape, dtype = part0_pids.dtype, data = part0_pids)
 
@@ -175,8 +175,14 @@ if(('PartType0' in part_types1) or ('PartType0' in part_types2)): #do nothing if
         
         ic2_part0_coord = np.array([])
 
-    part0_coord = np.vstack((ic1_part0_coord, ic2_part0_coord)) #combined gas coordinates
-
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType0' in part_types1) & ('PartType0' in part_types2)):
+        part0_coord = np.vstack((ic1_part0_coord, ic2_part0_coord)) #combined gas coordinates
+    elif('PartType0' in part_types1):
+        part0_coord = ic1_part0_coord
+    elif('PartType0' in part_types2):
+        part0_coord = ic2_part0_coord
+    
     dset = f.create_dataset('/PartType0/Coordinates', shape = part0_coord.shape, dtype = part0_coord.dtype, data = part0_coord)
 
     print("Creating coordinates of PartType0...")
@@ -211,7 +217,13 @@ if(('PartType0' in part_types1) or ('PartType0' in part_types2)): #do nothing if
         
         ic2_part0_vel = np.array([])
 
-    part0_vel = np.vstack((ic1_part0_vel, ic2_part0_vel)) #combined gas velocities
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType0' in part_types1) & ('PartType0' in part_types2)):
+        part0_vel = np.vstack((ic1_part0_vel, ic2_part0_vel)) #combined gas velocities
+    elif('PartType0' in part_types1):
+        part0_vel = ic1_part0_vel
+    elif('PartType0' in part_types2):
+        part0_vel = ic2_part0_vel
 
     dset = f.create_dataset('/PartType0/Velocities', shape = part0_vel.shape, dtype = part0_vel.dtype, data = part0_vel)
 
@@ -270,7 +282,7 @@ if(('PartType1' in part_types1) or ('PartType1' in part_types2)): #do nothing if
     else:
         ic2_part1_pids = np.array([])
 
-    part1_pids = np.append(ic1_part1_pids, ic2_part1_pids + N_ic1).astype(int) 
+    part1_pids = np.append(ic1_part1_pids, ic2_part1_pids + N_ic1).astype(int) #if ic2_part1_pids is empty, adding N_ic1 to it will still give an empty array. So, you will be fine. But I admit this is not good programming practice. 
 
     dset = f.create_dataset('/PartType1/ParticleIDs', shape = part1_pids.shape, dtype = part1_pids.dtype, data = part1_pids)
 
@@ -306,7 +318,13 @@ if(('PartType1' in part_types1) or ('PartType1' in part_types2)): #do nothing if
 
         ic2_part1_coord = np.array([])
 
-    part1_coord = np.vstack((ic1_part1_coord, ic2_part1_coord)) #combined halo coordinates
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType1' in part_types1) & ('PartType1' in part_types2)):
+        part1_coord = np.vstack((ic1_part1_coord, ic2_part1_coord)) #combined halo coordinates
+    elif('PartType1' in part_types1):
+        part1_coord = ic1_part1_coord
+    elif('PartType1' in part_types2):
+        part1_coord = ic2_part1_coord
 
     dset = f.create_dataset('/PartType1/Coordinates', shape = part1_coord.shape, dtype = part1_coord.dtype, data = part1_coord)
 
@@ -342,7 +360,13 @@ if(('PartType1' in part_types1) or ('PartType1' in part_types2)): #do nothing if
         
         ic2_part1_vel = np.array([])
 
-    part1_vel = np.vstack((ic1_part1_vel, ic2_part1_vel)) #combined halo velocities
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType1' in part_types1) & ('PartType1' in part_types2)):
+        part1_vel = np.vstack((ic1_part1_vel, ic2_part1_vel)) #combined halo velocities
+    elif('PartType1' in part_types1):
+        part1_vel = ic1_part1_vel
+    elif('PartType1' in part_types2):
+        part1_vel = ic2_part1_vel
 
     dset = f.create_dataset('/PartType1/Velocities', shape = part1_vel.shape, dtype = part1_vel.dtype, data = part1_vel)
 
@@ -399,7 +423,7 @@ if(('PartType2' in part_types1) or ('PartType2' in part_types2)): #do nothing if
     else:
         ic2_part2_pids = np.array([])
 
-    part2_pids = np.append(ic1_part2_pids, ic2_part2_pids + N_ic1).astype(int) 
+    part2_pids = np.append(ic1_part2_pids, ic2_part2_pids + N_ic1).astype(int) #if ic2_part2_pids is empty, adding N_ic1 to it will still give an empty array. So, you will be fine. But I admit this is not good programming practice. 
 
     dset = f.create_dataset('/PartType2/ParticleIDs', shape = part2_pids.shape, dtype = part2_pids.dtype, data = part2_pids)
 
@@ -429,7 +453,13 @@ if(('PartType2' in part_types1) or ('PartType2' in part_types2)): #do nothing if
     else:
         ic2_part2_coord = np.array([])
 
-    part2_coord = np.vstack((ic1_part2_coord, ic2_part2_coord)) #combined disk coordinates
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType2' in part_types1) & ('PartType2' in part_types2)):
+        part2_coord = np.vstack((ic1_part2_coord, ic2_part2_coord)) #combined disk coordinates
+    elif('PartType2' in part_types1):
+        part2_coord = ic1_part2_coord
+    elif('PartType2' in part_types2):
+        part2_coord = ic2_part2_coord
 
     dset = f.create_dataset('/PartType2/Coordinates', shape = part2_coord.shape, dtype = part2_coord.dtype, data = part2_coord)
 
@@ -459,7 +489,13 @@ if(('PartType2' in part_types1) or ('PartType2' in part_types2)): #do nothing if
     else:
         ic2_part2_vel = np.array([])
 
-    part2_vel = np.vstack((ic1_part2_vel, ic2_part2_vel)) #combined disk velocities
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType2' in part_types1) & ('PartType2' in part_types2)):
+        part2_vel = np.vstack((ic1_part2_vel, ic2_part2_vel)) #combined disk velocities
+    elif('PartType2' in part_types1):
+        part2_vel = ic1_part2_vel
+    elif('PartType2' in part_types2):
+        part2_vel = ic2_part2_vel
 
     dset = f.create_dataset('/PartType2/Velocities', shape = part2_vel.shape, dtype = part2_vel.dtype, data = part2_vel)
 
@@ -540,7 +576,13 @@ if(('PartType3' in part_types1) or ('PartType3' in part_types2)): #do nothing if
     else:
         ic2_part3_coord = np.array([])
 
-    part3_coord = np.vstack((ic1_part3_coord, ic2_part3_coord)) #combined bulge coordinates
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType3' in part_types1) & ('PartType3' in part_types2)):
+        part3_coord = np.vstack((ic1_part3_coord, ic2_part3_coord)) #combined bulge coordinates
+    elif('PartType3' in part_types1):
+        part3_coord = ic1_part3_coord
+    elif('PartType3' in part_types2):
+        part3_coord = ic2_part3_coord
 
     dset = f.create_dataset('/PartType3/Coordinates', shape = part3_coord.shape, dtype = part3_coord.dtype, data = part3_coord)
 
@@ -570,7 +612,13 @@ if(('PartType3' in part_types1) or ('PartType3' in part_types2)): #do nothing if
     else:
         ic2_part3_vel = np.array([])
 
-    part3_vel = np.vstack((ic1_part3_vel, ic2_part3_vel)) #combined bulge velocities
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType3' in part_types1) & ('PartType3' in part_types2)):
+        part3_vel = np.vstack((ic1_part3_vel, ic2_part3_vel)) #combined bulge velocities
+    elif('PartType3' in part_types1):
+        part3_vel = ic1_part3_vel
+    elif('PartType3' in part_types2):
+        part3_vel = ic2_part3_vel
 
     dset = f.create_dataset('/PartType3/Velocities', shape = part3_vel.shape, dtype = part3_vel.dtype, data = part3_vel)
 
@@ -651,7 +699,13 @@ if(('PartType5' in part_types1) or ('PartType5' in part_types2)): #do nothing if
     else:
         ic2_part5_coord = np.array([])
 
-    part5_coord = np.vstack((ic1_part5_coord, ic2_part5_coord)) #combined disk coordinates
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType5' in part_types1) & ('PartType5' in part_types2)):
+        part5_coord = np.vstack((ic1_part5_coord, ic2_part5_coord)) #combined bh coordinates
+    elif('PartType5' in part_types1):
+        part5_coord = ic1_part5_coord
+    elif('PartType5' in part_types2):
+        part5_coord = ic2_part5_coord
 
     dset = f.create_dataset('/PartType5/Coordinates', shape = part5_coord.shape, dtype = part5_coord.dtype, data = part5_coord)
 
@@ -681,7 +735,13 @@ if(('PartType5' in part_types1) or ('PartType5' in part_types2)): #do nothing if
     else:
         ic2_part5_vel = np.array([])
 
-    part5_vel = np.vstack((ic1_part5_vel, ic2_part5_vel)) #combined halo velocities
+    #below is likely not an efficient way, since the if condition has already been checked before
+    if(('PartType5' in part_types1) & ('PartType5' in part_types2)):
+        part5_vel = np.vstack((ic1_part5_vel, ic2_part5_vel)) #combined bh velocities
+    elif('PartType5' in part_types1):
+        part5_vel = ic1_part5_vel
+    elif('PartType5' in part_types2):
+        part5_vel = ic2_part5_vel
 
     dset = f.create_dataset('/PartType5/Velocities', shape = part5_vel.shape, dtype = part5_vel.dtype, data = part5_vel)
 
